@@ -5,47 +5,52 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QMessageBox>  // Include for displaying messages
+
+#include "GameState.hpp"
+#include "GamePiece.hpp"
 
 class GameGUI : public QWidget {
 public:
-    GameGUI() {
+    GameGUI(GameState& gameState) : gameState(gameState) {
         setupUI();
     }
 
 private:
+    GameState& gameState;  // Reference to the GameState object
+
     void setupUI() {
         // Create widgets
         QLabel* titleLabel = new QLabel("Board Game Simulator");
         QPushButton* startButton = new QPushButton("Start Game");
+
         // Add more widgets as needed
 
         // Create layout
         QVBoxLayout* layout = new QVBoxLayout;
         layout->addWidget(titleLabel);
         layout->addWidget(startButton);
-        // Add more widgets to the layout
 
         // Set the layout for the main window
         setLayout(layout);
 
         // Connect signals and slots (event handling)
         connect(startButton, &QPushButton::clicked, this, &GameGUI::startGame);
-        // Connect more signals and slots as needed
     }
 
 private slots:
     void startGame() {
-        // Implement what should happen when the "Start Game" button is clicked
-        // For example, launch the game board window
+        // Retrieve information about the game pieces
+        int totalPieces = gameState.NumPieces();
+        int warriorPower = GamePiece("TestPlayer", "Warrior", &gameState).GetPower();
+        int scoutSpeed = GamePiece("TestPlayer", "Scout", &gameState).GetSpeed();
+
+        // Display information using a message box (you can customize this part)
+        QString message = QString("Total Pieces: %1\nWarrior Power: %2\nScout Speed: %3")
+                              .arg(totalPieces)
+                              .arg(warriorPower)
+                              .arg(scoutSpeed);
+
+        QMessageBox::information(this, "Game Information", message);
     }
 };
-
-int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
-
-    GameGUI gameGUI;
-    gameGUI.show();
-
-    return app.exec();
-}
-
